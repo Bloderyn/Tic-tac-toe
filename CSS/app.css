@@ -134,18 +134,38 @@ label {
   font-size: 24px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 160ms ease;
+  transition:
+    background-color 200ms ease,
+    transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .symbol-btn:hover {
   background-color: var(--cell-hover);
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.symbol-btn:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 200ms ease,
+    transform 80ms ease,
+    box-shadow 80ms ease;
 }
 
 .symbol-btn.active {
   background-color: var(--focus);
   border-color: var(--focus);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.symbol-btn.active:hover {
+  transform: translateY(-2px) scale(1.08);
 }
 
 .symbol-btn[data-symbol="X"] {
@@ -198,19 +218,35 @@ label {
   font-family: "Silkscreen", cursive;
   border-radius: 12px;
   border: 2px solid var(--border);
-  transition: background 160ms ease-in-out;
+  transition:
+    background 200ms ease,
+    box-shadow 200ms ease;
   cursor: pointer;
-  box-shadow: 0 1px 3px var(--shadow);
+  box-shadow: 4px 4px 0 var(--border);
+}
+
+@keyframes color-cycle {
+  0% {
+    border-color: #9c6c84;
+  }
+  33% {
+    border-color: #7caa93;
+  }
+  66% {
+    border-color: #7b6592;
+  }
+  100% {
+    border-color: #a5778e;
+  }
 }
 
 #reset:hover {
-  background: var(--cell-hover);
-  box-shadow: 0 3px 6px var(--shadow);
+  animation: color-cycle 400ms steps(3) infinite;
 }
-
 #reset:active {
-  box-shadow: 0 1px 3px var(--shadow);
-  transform: translateY(1.8px);
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--border);
+  transition: all 50ms steps(2);
 }
 
 select,
@@ -233,18 +269,26 @@ select:open::picker-icon {
   border: none;
   border-radius: 8px;
   opacity: 0;
-  transition: all 0.5s allow-discrete;
+  transform: translateY(-10px) scale(0.95);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    overlay 0.3s allow-discrete,
+    display 0.3s allow-discrete;
 }
 
 ::picker(select):popover-open {
   opacity: 1;
-  margin-top: 8px;
+  transform: translateY(0) scale(1);
+  margin-top: 0.5rem;
 }
 
 @starting-style {
   ::picker(select):popover-open {
     opacity: 0;
-    margin-top: -8px;
+    transform: translateY(-10px) scale(0.95);
+    margin-top: -0.5rem;
   }
 }
 

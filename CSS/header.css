@@ -9,8 +9,48 @@
 h1 {
   margin: 0;
   font-size: 50px;
-  letter-spacing: 0.2px;
+  letter-spacing: 3px;
   font-family: "Silkscreen", cursive;
+  color: var(--text);
+  text-shadow:
+    1px 1px 0 var(--x),
+    2px 2px 0 var(--x),
+    3px 3px 0 var(--o),
+    4px 4px 0 var(--o),
+    5px 5px 0 var(--x),
+    6px 6px 0 var(--x),
+    7px 7px 0 var(--o),
+    8px 8px 0 var(--o),
+    9px 9px 15px rgba(0, 0, 0, 0.5);
+  transform: perspective(500px) rotateX(10deg);
+  animation: arcade3D 3s ease-in-out infinite;
+  cursor: default;
+  user-select: none;
+  transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+h1:hover {
+  letter-spacing: 5px;
+  transform: perspective(500px) rotateX(0deg) scale(1.05);
+  text-shadow:
+    2px 2px 0 var(--x),
+    4px 4px 0 var(--x),
+    6px 6px 0 var(--o),
+    8px 8px 0 var(--o),
+    10px 10px 0 var(--x),
+    12px 12px 0 var(--x),
+    14px 14px 0 var(--o),
+    16px 16px 0 var(--o),
+    18px 18px 25px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes arcade3D {
+  0%, 100% {
+    transform: perspective(500px) rotateX(10deg);
+  }
+  50% {
+    transform: perspective(500px) rotateX(5deg);
+  }
 }
 
 #theme-toggle {
@@ -24,21 +64,33 @@ h1 {
   cursor: pointer;
   font-size: 0.9rem;
   transition:
-    background 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-  box-shadow: 0 1px 3px var(--shadow);
+    background 250ms ease,
+    transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 250ms ease;
+  box-shadow: 0 2px 6px var(--shadow);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 #theme-toggle:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px var(--shadow);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 12px var(--shadow);
 }
 
 #theme-toggle:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 3px var(--shadow);
+  transform: translateY(0) scale(0.95) rotate(180deg);
+  box-shadow: 0 2px 4px var(--shadow);
+  transition:
+    background 250ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+#theme-toggle svg {
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#theme-toggle:hover svg {
+  transform: rotate(20deg);
 }

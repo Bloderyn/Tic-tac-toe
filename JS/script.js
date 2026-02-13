@@ -185,8 +185,16 @@ function updateUI() {
   const board = Game.getBoard();
 
   cells.forEach((cell, index) => {
-    cell.textContent = board[index];
-    cell.disabled = board[index] !== "" || !Game.isRunning();
+    const currentSymbol = board[index];
+    const hasSymbol = cell.querySelector(".mark") !== null;
+
+    if (currentSymbol !== "" && !hasSymbol) {
+      renderSymbol(cell, currentSymbol);
+    } else if (currentSymbol === "" && hasSymbol) {
+      cell.innerHTML = "";
+    }
+
+    cell.disabled = currentSymbol !== "" || !Game.isRunning();
   });
 
   cells.forEach((cell, index) => {
@@ -288,6 +296,30 @@ function selectSymbol(event) {
 
 function renderSymbol(cellEl, symbol) {
   cellEl.innerHTML = symbol === "X" ? getXSVG() : getOSVG();
+}
+
+function getXSVG() {
+  return `<svg class= "mark mark-x" viewBox="0 0 100 100" aria-hidden="true">
+    <line class="stroke a" x1="30" y1="30" x2="70" y2="70"></line>
+    <line class="stroke b" x1="70" y1="30" x2="30" y2="70"></line>
+  </svg>`;
+}
+
+function getOSVG() {
+  return `<svg class="mark mark-o" viewBox="0 0 100 100" aria-hidden="true">
+    <circle class="stroke" cx="50" cy="50" r="25" fill="none"></circle>
+  </svg>`;
+}
+
+function handleCellClick(e) {
+  const cell = e.target.closest(".cell");
+  if (!cell) return;
+
+  const index = parseInt(cell.dataset.index);
+  const result = Game.playMove(index);
+  if (result.ok) {
+    updateUI();
+  }
 }
 
 createBoard();
