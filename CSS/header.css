@@ -3,19 +3,20 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 1rem 4rem;
+  padding: 4rem 6rem 1rem 6rem;
 }
 
 h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 50px;
   letter-spacing: 0.2px;
+  font-family: "Silkscreen", cursive;
 }
 
 #theme-toggle {
   padding: 0.4rem 0.9rem;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 1px solid var(--border);
   background-color: var(--bg-card);
@@ -40,9 +41,4 @@ h1 {
 #theme-toggle:active {
   transform: translateY(0);
   box-shadow: 0 1px 3px var(--shadow);
-}
-
-#theme-toggle img {
-  width: 30px;
-  height: 30px;
 }

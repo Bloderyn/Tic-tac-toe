@@ -8,6 +8,8 @@
   --board-bg: #e6d5c3;
   --cell-bg: #f9f4ec;
   --cell-hover: #f0e4d7;
+  --focus: #d8c3a5;
+  --button-bg: #dfd1c1;
 
   --x: #6b4f3a;
   --o: #7a8f7a;
@@ -25,10 +27,12 @@
   --muted: #b9b3c6;
   --border: #4a4455;
   --bg-card: #3a3550;
+  --button-bg: #3c334b;
 
   --board-bg: #2a2738;
   --cell-bg: #3a3550;
   --cell-hover: #463f61;
+  --focus: #5a4e7c;
 
   --x: #f4b393;
   --o: #a3c4bc;

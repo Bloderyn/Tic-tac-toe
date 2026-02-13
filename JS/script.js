@@ -1,18 +1,21 @@
 const statusEl = document.querySelector("#status");
 const resetBtn = document.querySelector("#reset");
 const boardEl = document.querySelector("#board");
+const difficultyEl = document.querySelector("#difficulty");
+const symbolBtns = document.querySelectorAll(".symbol-btn");
 
 const Game = (() => {
-  const human = "X";
-  const ai = "O";
+  let humanSymbol = "X";
+  let aiSymbol = "O";
 
   let board = Array(9).fill("");
-  let currentPlayer = human;
+  let currentPlayer = humanSymbol;
   let running = true;
+  let difficulty = "medium";
 
   function reset() {
     board = Array(9).fill("");
-    currentPlayer = human;
+    currentPlayer = humanSymbol;
     running = true;
   }
 
@@ -44,18 +47,124 @@ const Game = (() => {
       return { ok: true, draw: true };
     }
 
-    currentPlayer = currentPlayer === human ? ai : human;
+    currentPlayer = currentPlayer === humanSymbol ? aiSymbol : humanSymbol;
     return { ok: true, next: currentPlayer };
   }
 
+  function getAvailableMoves(boardState) {
+    const moves = [];
+    for (let i = 0; i < boardState.length; i++) {
+      if (boardState[i] === "") moves.push(i);
+    }
+    return moves;
+  }
+
+  function isDraw(boardState) {
+    return boardState.every((cell) => cell !== "");
+  }
+
+  function minimax(boardState, depth, isMaximizing) {
+    if (getWinningCombo(aiSymbol, boardState)) return 10 - depth;
+    if (getWinningCombo(humanSymbol, boardState)) return depth - 10;
+    if (isDraw(boardState)) return 0;
+
+    const moves = getAvailableMoves(boardState);
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (const move of moves) {
+        boardState[move] = aiSymbol;
+        const score = minimax(boardState, depth + 1, false);
+        boardState[move] = "";
+        bestScore = Math.max(score, bestScore);
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (const move of moves) {
+        boardState[move] = humanSymbol;
+        const score = minimax(boardState, depth + 1, true);
+        boardState[move] = "";
+        bestScore = Math.min(score, bestScore);
+      }
+      return bestScore;
+    }
+  }
+
+  function getBestMove(boardState) {
+    let bestScore = -Infinity;
+    let bestMove = null;
+    const moves = getAvailableMoves(boardState);
+
+    for (const move of moves) {
+      boardState[move] = aiSymbol;
+      const score = minimax(boardState, 0, false);
+      boardState[move] = "";
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = move;
+      }
+    }
+    return bestMove;
+  }
+
+  function aiMove() {
+    if (!running || currentPlayer !== aiSymbol) return;
+
+    statusEl.textContent = "AI is thinking...";
+
+    const boardState = board.slice();
+
+    let randomMoveProbability = 0.4;
+    if (difficulty === "easy") randomMoveProbability = 0.7;
+    else if (difficulty === "hard") randomMoveProbability = 0.1;
+
+    const makeRandomMove = Math.random() < randomMoveProbability;
+    let move;
+
+    if (makeRandomMove) {
+      const availableMoves = getAvailableMoves(boardState);
+      move = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+    } else {
+      move = getBestMove(boardState);
+    }
+
+    if (move === null) return;
+
+    const result = playMove(move);
+
+    if (result.ok) {
+      updateUI();
+      animateCells(move);
+
+      if (result.win) {
+        statusEl.textContent = `Player ${result.player} wins!`;
+        highlightWinningCombo(result.combo);
+      } else if (result.draw) {
+        statusEl.textContent = "It's a draw!";
+      } else {
+        statusEl.textContent = `Player ${result.next}'s turn`;
+      }
+    }
+  }
+
   return {
-    human,
-    ai,
     reset,
     getBoard,
     isRunning,
     getCurrentPlayer,
     playMove,
+    aiMove,
+    setDifficulty: (level) => {
+      difficulty = level;
+    },
+    getDifficulty: () => difficulty,
+    setPlayerSymbol: (symbol) => {
+      humanSymbol = symbol;
+      aiSymbol = symbol === "X" ? "O" : "X";
+    },
+    getHumanSymbol: () => humanSymbol,
+    getAISymbol: () => aiSymbol,
   };
 })();
 
@@ -105,8 +214,8 @@ function playGame(e) {
         statusEl.textContent = `Player ${result.next}'s turn`;
 
         // Trigger AI move after human plays
-        if (result.next === Game.ai) {
-          setTimeout(aiMove, 500);
+        if (result.next === Game.getAISymbol()) {
+          setTimeout(Game.aiMove, 500);
         }
       }
     }
@@ -141,10 +250,6 @@ function highlightWinningCombo(combo) {
   });
 }
 
-function checkDraw() {
-  return board.every((cell) => cell !== "");
-}
-
 function animateCells(index) {
   const cellEl = boardEl.querySelector(`.cell[data-index="${index}"]`);
   cellEl.classList.remove("pop");
@@ -160,98 +265,36 @@ function resetGame() {
   updateUI();
 }
 
+function difficultySelect(event) {
+  const difficulty = event.target.value;
+  Game.setDifficulty(difficulty);
+}
+
+function selectSymbol(event) {
+  if (!event.target.classList.contains("symbol-btn")) return;
+
+  const selectedSymbol = event.target.dataset.symbol;
+
+  // Update button styles
+  symbolBtns.forEach((btn) => btn.classList.remove("active"));
+  event.target.classList.add("active");
+
+  // Update game and reset
+  Game.setPlayerSymbol(selectedSymbol);
+  resetGame();
+
+  // If player chose O, AI (X) goes first
+  if (selectedSymbol === "O") {
+    setTimeout(Game.aiMove, 500);
+  }
+}
+
 createBoard();
 updateUI();
 
 boardEl.addEventListener("click", playGame);
 resetBtn.addEventListener("click", resetGame);
+difficultyEl.addEventListener("change", difficultySelect);
+symbolBtns.forEach((btn) => btn.addEventListener("click", selectSymbol));
 
 statusEl.textContent = `Player ${Game.getCurrentPlayer()}'s turn`;
-
-// AI SIMULATOR - So we can test the game against AI without having to play against ourselves
-const human = "X";
-const ai = "O";
-
-function getAvailableMoves(board) {
-  const moves = [];
-  for (let i = 0; i < board.length; i++) {
-    if (board[i] === "") moves.push(i);
-  }
-  return moves;
-}
-
-function isDraw(board) {
-  return board.every((cell) => cell !== "");
-}
-
-function minimax(board, depth, isMaximizing) {
-  if (getWinningCombo(ai, board)) return 10 - depth;
-  if (getWinningCombo(human, board)) return depth - 10;
-  if (isDraw(board)) return 0;
-
-  const moves = getAvailableMoves(board);
-  if (isMaximizing) {
-    let bestScore = -Infinity;
-    for (const move of moves) {
-      board[move] = ai;
-      const score = minimax(board, depth + 1, false);
-      board[move] = "";
-      bestScore = Math.max(score, bestScore);
-    }
-    return bestScore;
-  } else {
-    let bestScore = Infinity;
-    for (const move of moves) {
-      board[move] = human;
-      const score = minimax(board, depth + 1, true);
-      board[move] = "";
-      bestScore = Math.min(score, bestScore);
-    }
-    return bestScore;
-  }
-}
-
-function getBestMove(boardState) {
-  let bestScore = -Infinity;
-  let bestMove = null;
-  const moves = getAvailableMoves(boardState);
-
-  for (const move of moves) {
-    boardState[move] = ai;
-    const score = minimax(boardState, 0, false);
-    boardState[move] = "";
-
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = move;
-    }
-  }
-  return bestMove;
-}
-
-function aiMove() {
-  if (!Game.isRunning() || Game.getCurrentPlayer() !== Game.ai) return;
-
-  statusEl.textContent = "AI is thinking...";
-
-  const board = Game.getBoard();
-  const move = getBestMove(board);
-
-  if (move === null) return;
-
-  const result = Game.playMove(move);
-
-  if (result.ok) {
-    updateUI();
-    animateCells(move);
-
-    if (result.win) {
-      statusEl.textContent = `Player ${result.player} wins!`;
-      highlightWinningCombo(result.combo);
-    } else if (result.draw) {
-      statusEl.textContent = "It's a draw!";
-    } else {
-      statusEl.textContent = `Player ${result.next}'s turn`;
-    }
-  }
-}

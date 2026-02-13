@@ -78,6 +78,18 @@
   color: var(--muted);
 }
 
+p {
+  margin: 0;
+  font-family: "Handjet", sans-serif;
+  font-size: 1.8rem;
+}
+
+label {
+  font-family: "Handjet", sans-serif;
+  font-size: 1.6rem;
+  padding: 0 1rem;
+} 
+
 .reset {
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -90,3 +102,109 @@
 .reset:hover {
   filter: brightness(1.05);
 }
+
+.game-settings {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.player-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 16px;
+}
+
+.symbol-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.symbol-btn {
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--button-bg);
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.symbol-btn:hover {
+  background-color: var(--cell-hover);
+  transform: translateY(-2px);
+}
+
+.symbol-btn.active {
+  background-color: var(--focus);
+  border-color: var(--focus);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.symbol-btn[data-symbol="X"] {
+  color: var(--x);
+}
+
+.symbol-btn[data-symbol="O"] {
+  color: var(--o);
+}
+
+.difficulty-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 16px;
+}
+
+.difficulty-selector select {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--focus);
+  background-color: var(--button-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 160ms ease;
+}
+
+.difficulty-selector select:hover {
+  background-color: var(--cell-hover);
+}
+
+.difficulty-selector select:focus {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px var(--focus);
+}
+
+#reset {
+  margin-top: 3rem;
+  padding: 1rem 2rem;
+
+  background: var(--button-bg);
+  color: var(--text);
+  font-size: 1.2rem;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  transition: background 160ms ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+#reset:hover {
+  background: var(--cell-hover);
+  box-shadow: 0 3px 6px var(--shadow);
+}
+
+#reset:active {
+  box-shadow: 0 1px 3px var(--shadow);
+  transform: translateY(0.95px);
+}
+
+
