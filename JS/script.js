@@ -275,18 +275,19 @@ function selectSymbol(event) {
 
   const selectedSymbol = event.target.dataset.symbol;
 
-  // Update button styles
   symbolBtns.forEach((btn) => btn.classList.remove("active"));
   event.target.classList.add("active");
 
-  // Update game and reset
   Game.setPlayerSymbol(selectedSymbol);
   resetGame();
 
-  // If player chose O, AI (X) goes first
   if (selectedSymbol === "O") {
     setTimeout(Game.aiMove, 500);
   }
+}
+
+function renderSymbol(cellEl, symbol) {
+  cellEl.innerHTML = symbol === "X" ? getXSVG() : getOSVG();
 }
 
 createBoard();

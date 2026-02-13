@@ -9,7 +9,10 @@
   --cell-bg: #f9f4ec;
   --cell-hover: #f0e4d7;
   --focus: #d8c3a5;
+  --focus-bis: #f3f0eb;
   --button-bg: #dfd1c1;
+  --option: #ecdfd1;
+  --option-bis: #e2d2be;
 
   --x: #6b4f3a;
   --o: #7a8f7a;
@@ -28,11 +31,14 @@
   --border: #4a4455;
   --bg-card: #3a3550;
   --button-bg: #3c334b;
+  --option: #5a4e7c;
+  --option-bis: #463f61;
 
   --board-bg: #2a2738;
   --cell-bg: #3a3550;
   --cell-hover: #463f61;
   --focus: #5a4e7c;
+  --focus-bis: rgb(113, 106, 139);
 
   --x: #f4b393;
   --o: #a3c4bc;

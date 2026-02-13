@@ -2,7 +2,7 @@
   display: grid;
   gap: 1rem;
   justify-items: center;
-  padding: 2rem;
+  padding: 0.5rem 2rem 2rem 2rem;
 }
 
 .board {
@@ -80,15 +80,16 @@
 
 p {
   margin: 0;
+  padding-bottom: 0.5rem;
   font-family: "Handjet", sans-serif;
-  font-size: 1.8rem;
+  font-size: 3rem;
 }
 
 label {
   font-family: "Handjet", sans-serif;
   font-size: 1.6rem;
   padding: 0 1rem;
-} 
+}
 
 .reset {
   padding: 0.5rem 1rem;
@@ -169,8 +170,12 @@ label {
   background-color: var(--button-bg);
   color: var(--text);
   cursor: pointer;
-  font-size: 16px;
+  padding: 0.5rem 1rem;
+  width: 140px;
+  font-family: "Handjet", sans-serif;
+  font-size: 1.4rem;
   transition: background-color 160ms ease;
+  justify-content: center;
 }
 
 .difficulty-selector select:hover {
@@ -178,7 +183,7 @@ label {
 }
 
 .difficulty-selector select:focus {
-  outline: 3px solid var(--focus);
+  outline: transparent;
   outline-offset: 3px;
   box-shadow: 0 0 0 1px var(--focus);
 }
@@ -190,6 +195,7 @@ label {
   background: var(--button-bg);
   color: var(--text);
   font-size: 1.2rem;
+  font-family: "Silkscreen", cursive;
   border-radius: 12px;
   border: 2px solid var(--border);
   transition: background 160ms ease-in-out;
@@ -204,7 +210,78 @@ label {
 
 #reset:active {
   box-shadow: 0 1px 3px var(--shadow);
-  transform: translateY(0.95px);
+  transform: translateY(1.8px);
 }
 
+select,
+::picker(select) {
+  appearance: base-select;
+  background: var(--cell-bg);
+}
 
+select::picker-icon {
+  color: #999999;
+  transition: 0.4s rotate;
+  margin: 0;
+}
+
+select:open::picker-icon {
+  rotate: 180deg;
+}
+
+::picker(select) {
+  border: none;
+  border-radius: 8px;
+  opacity: 0;
+  transition: all 0.5s allow-discrete;
+}
+
+::picker(select):popover-open {
+  opacity: 1;
+  margin-top: 8px;
+}
+
+@starting-style {
+  ::picker(select):popover-open {
+    opacity: 0;
+    margin-top: -8px;
+  }
+}
+
+option {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+
+  border: 2px solid var(--border);
+  color: var(--text);
+  font-family: "Handjet", sans-serif;
+  font-size: 1.3rem;
+  background: var(--option);
+  padding: 0.8rem;
+  transition: 0.4s;
+}
+
+option:first-of-type {
+  border-radius: 8px 8px 0 0;
+}
+
+option:last-of-type {
+  border-radius: 0 0 8px 8px;
+}
+
+option:not(option:last-of-type) {
+  border-bottom: none;
+}
+
+option:nth-of-type(odd) {
+  background: var(--option-bis);
+}
+
+selectedcontent .icon {
+  display: none;
+}
+
+option:hover {
+  background: var(--focus-bis);
+}
