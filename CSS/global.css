@@ -45,8 +45,6 @@ body {
   margin: 0;
   font-family: system-ui, sans-serif;
   min-height: 100vh;
-  display: grid;
-  place-items: center;
 
   background-color: var(--bg);
   color: var(--text);

@@ -6,6 +6,12 @@
   padding: 1rem 4rem;
 }
 
+h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.2px;
+}
+
 #theme-toggle {
   padding: 0.4rem 0.9rem;
   width: 50px;

@@ -103,7 +103,7 @@ function playGame(e) {
         statusEl.textContent = "It's a draw!";
       } else {
         statusEl.textContent = `Player ${result.next}'s turn`;
-        
+
         // Trigger AI move after human plays
         if (result.next === Game.ai) {
           setTimeout(aiMove, 500);
@@ -190,7 +190,6 @@ function minimax(board, depth, isMaximizing) {
   if (isDraw(board)) return 0;
 
   const moves = getAvailableMoves(board);
-
   if (isMaximizing) {
     let bestScore = -Infinity;
     for (const move of moves) {
@@ -232,16 +231,16 @@ function getBestMove(boardState) {
 
 function aiMove() {
   if (!Game.isRunning() || Game.getCurrentPlayer() !== Game.ai) return;
-  
+
   statusEl.textContent = "AI is thinking...";
-  
+
   const board = Game.getBoard();
   const move = getBestMove(board);
-  
+
   if (move === null) return;
 
   const result = Game.playMove(move);
-  
+
   if (result.ok) {
     updateUI();
     animateCells(move);
