@@ -21,17 +21,20 @@
 }
 
 .mark {
-  transform: scale(0);
-  opacity: 0;
-  animation: pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: retro-pop 200ms steps(3) forwards;
 }
 
-@keyframes pop {
+@keyframes retro-pop {
   0% {
     transform: scale(0);
     opacity: 0;
   }
-  50% {
+  33% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  66% {
+    transform: scale(0.9);
     opacity: 1;
   }
   100% {
