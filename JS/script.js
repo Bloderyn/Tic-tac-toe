@@ -1,46 +1,68 @@
-let board = Array(9).fill("");
-let currentPlayer = "X";
-let gameRunning = true;
-
 const statusEl = document.querySelector("#status");
 const resetBtn = document.querySelector("#reset");
 const boardEl = document.querySelector("#board");
 
-function playGame(e) {
-  const cell = e.target;
+const Game = (() => {
+  const human = "X";
+  const ai = "O";
 
-  if (!cell.classList.contains("cell")) return;
+  let board = Array(9).fill("");
+  let currentPlayer = human;
+  let running = true;
 
-  const index = Number(cell.dataset.index);
-
-  if (!gameRunning) return;
-  if (board[index] !== "") return;
-
-  board[index] = currentPlayer;
-  updateUI();
-  animateCells(index);
-
-  const winningCombo = getWinningCombo(currentPlayer, board);
-  if (winningCombo) {
-    statusEl.textContent = `Player ${currentPlayer} wins!`;
-    highlightWinningCombo(winningCombo);
-    gameRunning = false;
-    return;
+  function reset() {
+    board = Array(9).fill("");
+    currentPlayer = human;
+    running = true;
   }
 
-  if (checkDraw()) {
-    statusEl.textContent = "It's a draw!";
-    gameRunning = false;
-    return;
+  function getBoard() {
+    return board.slice();
   }
 
-  currentPlayer = currentPlayer === "X" ? "O" : "X";
-  statusEl.textContent = `Player ${currentPlayer}'s turn`;
-}
+  function isRunning() {
+    return running;
+  }
+  function getCurrentPlayer() {
+    return currentPlayer;
+  }
+
+  function playMove(index) {
+    if (!running) return { ok: false };
+    if (board[index] !== "") return { ok: false };
+
+    board[index] = currentPlayer;
+
+    const combo = getWinningCombo(currentPlayer, board);
+    if (combo) {
+      running = false;
+      return { ok: true, win: true, combo, player: currentPlayer };
+    }
+
+    if (board.every((c) => c !== "")) {
+      running = false;
+      return { ok: true, draw: true };
+    }
+
+    currentPlayer = currentPlayer === human ? ai : human;
+    return { ok: true, next: currentPlayer };
+  }
+
+  return {
+    human,
+    ai,
+    reset,
+    getBoard,
+    isRunning,
+    getCurrentPlayer,
+    playMove,
+  };
+})();
 
 function createBoard() {
   boardEl.innerHTML = "";
 
+  const board = Game.getBoard();
   board.forEach((_, index) => {
     const cell = document.createElement("button");
     cell.classList.add("cell");
@@ -51,11 +73,44 @@ function createBoard() {
 
 function updateUI() {
   const cells = document.querySelectorAll(".cell");
+  const board = Game.getBoard();
 
   cells.forEach((cell, index) => {
     cell.textContent = board[index];
-    cell.disabled = board[index] !== "" || !gameRunning;
+    cell.disabled = board[index] !== "" || !Game.isRunning();
   });
+
+  cells.forEach((cell, index) => {
+    cell.classList.remove("x", "o");
+    if (board[index] === "X") cell.classList.add("x");
+    if (board[index] === "O") cell.classList.add("o");
+  });
+}
+
+function playGame(e) {
+  if (e.target.classList.contains("cell")) {
+    const index = parseInt(e.target.dataset.index);
+    const result = Game.playMove(index);
+
+    if (result.ok) {
+      updateUI();
+      animateCells(index);
+
+      if (result.win) {
+        statusEl.textContent = `Player ${result.player} wins!`;
+        highlightWinningCombo(result.combo);
+      } else if (result.draw) {
+        statusEl.textContent = "It's a draw!";
+      } else {
+        statusEl.textContent = `Player ${result.next}'s turn`;
+        
+        // Trigger AI move after human plays
+        if (result.next === Game.ai) {
+          setTimeout(aiMove, 500);
+        }
+      }
+    }
+  }
 }
 
 function getWinningCombo(player, board) {
@@ -98,10 +153,8 @@ function animateCells(index) {
 }
 
 function resetGame() {
-  board = Array(9).fill("");
-  currentPlayer = "X";
-  gameRunning = true;
-  statusEl.textContent = `Player ${currentPlayer}'s turn`;
+  Game.reset();
+  statusEl.textContent = `Player ${Game.getCurrentPlayer()}'s turn`;
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => cell.classList.remove("win"));
   updateUI();
@@ -113,7 +166,7 @@ updateUI();
 boardEl.addEventListener("click", playGame);
 resetBtn.addEventListener("click", resetGame);
 
-statusEl.textContent = `Player ${currentPlayer}'s turn`;
+statusEl.textContent = `Player ${Game.getCurrentPlayer()}'s turn`;
 
 // AI SIMULATOR - So we can test the game against AI without having to play against ourselves
 const human = "X";
@@ -156,5 +209,50 @@ function minimax(board, depth, isMaximizing) {
       bestScore = Math.min(score, bestScore);
     }
     return bestScore;
+  }
+}
+
+function getBestMove(boardState) {
+  let bestScore = -Infinity;
+  let bestMove = null;
+  const moves = getAvailableMoves(boardState);
+
+  for (const move of moves) {
+    boardState[move] = ai;
+    const score = minimax(boardState, 0, false);
+    boardState[move] = "";
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = move;
+    }
+  }
+  return bestMove;
+}
+
+function aiMove() {
+  if (!Game.isRunning() || Game.getCurrentPlayer() !== Game.ai) return;
+  
+  statusEl.textContent = "AI is thinking...";
+  
+  const board = Game.getBoard();
+  const move = getBestMove(board);
+  
+  if (move === null) return;
+
+  const result = Game.playMove(move);
+  
+  if (result.ok) {
+    updateUI();
+    animateCells(move);
+
+    if (result.win) {
+      statusEl.textContent = `Player ${result.player} wins!`;
+      highlightWinningCombo(result.combo);
+    } else if (result.draw) {
+      statusEl.textContent = "It's a draw!";
+    } else {
+      statusEl.textContent = `Player ${result.next}'s turn`;
+    }
   }
 }
