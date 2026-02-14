@@ -139,11 +139,15 @@ const Game = (() => {
   let currentPlayer = humanSymbol;
   let running = true;
   let difficulty = "medium";
+  let lastWinner = null;
 
-  function reset() {
+  function reset(preserveWinner = false) {
     board = Array(9).fill("");
-    currentPlayer = humanSymbol;
+    currentPlayer = preserveWinner && lastWinner ? lastWinner : humanSymbol;
     running = true;
+    if (!preserveWinner) {
+      lastWinner = null;
+    }
   }
 
   function getBoard() {
@@ -166,6 +170,7 @@ const Game = (() => {
     const combo = getWinningCombo(currentPlayer, board);
     if (combo) {
       running = false;
+      lastWinner = currentPlayer;
       return { ok: true, win: true, combo, player: currentPlayer };
     }
 
@@ -294,6 +299,7 @@ const Game = (() => {
     },
     getHumanSymbol: () => humanSymbol,
     getAISymbol: () => aiSymbol,
+    getLastWinner: () => lastWinner,
   };
 })();
 
@@ -397,7 +403,20 @@ function animateCells(index) {
 }
 
 function resetGame() {
-  Game.reset();
+  Game.reset(true); // Preserve winner for next game
+  statusEl.textContent = `Player ${Game.getCurrentPlayer()}'s turn`;
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach((cell) => cell.classList.remove("win"));
+  updateUI();
+
+  if (Game.getCurrentPlayer() === Game.getAISymbol()) {
+    setTimeout(Game.aiMove, 500);
+  }
+}
+
+function resetAll() {
+  Score.reset();
+  Game.reset(false);
   statusEl.textContent = `Player ${Game.getCurrentPlayer()}'s turn`;
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => cell.classList.remove("win"));
@@ -406,11 +425,6 @@ function resetGame() {
   if (Game.getHumanSymbol() === "O") {
     setTimeout(Game.aiMove, 500);
   }
-}
-
-function resetAll() {
-  Score.reset();
-  resetGame();
 }
 
 function difficultySelect(event) {
