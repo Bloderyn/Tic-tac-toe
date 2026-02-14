@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="CSS/header.css" />
     <link rel="stylesheet" href="CSS/app.css" />
     <link rel="stylesheet" href="CSS/stroke.css" />
+    <link rel="stylesheet" href="CSS/scoreboard.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,6 +38,7 @@
         </svg>
       </button>
     </header>
+
     <main class="app">
       <p id="status"></p>
       <div class="game-settings">
@@ -56,8 +58,41 @@
           </select>
         </div>
       </div>
-      <div id="board" class="board"></div>
-      <button id="reset">Reset Game</button>
+
+      <div class="app-container">
+        <div class="scoreboard">
+          <div class="score-item" data-player="X">
+            <div class="score-header">
+              <span class="crown">👑</span>
+              <span class="score-label">X</span>
+            </div>
+            <span id="score-x" class="score-value">0</span>
+          </div>
+          <div class="score-item" data-player="draw">
+            <span class="score-label">Draws</span>
+            <span id="score-draw" class="score-value">0</span>
+          </div>
+          <div class="score-item" data-player="O">
+            <div class="score-header">
+              <span class="crown">👑</span>
+              <span class="score-label">O</span>
+            </div>
+            <span id="score-o" class="score-value">0</span>
+          </div>
+          <div class="match-history">
+            <span class="history-label">History</span>
+            <div id="history-dots" class="history-dots"></div>
+          </div>
+        </div>
+
+        <div id="board" class="board"></div>
+        <div id="confetti-container" class="confetti-container"></div>
+      </div>
+
+      <div class="button-group">
+        <button id="new-game">New Game</button>
+        <button id="reset-all">Reset All</button>
+      </div>
     </main>
     <script src="JS/script.js"></script>
     <script src="JS/darkMode.js"></script>

@@ -1,8 +1,135 @@
 const statusEl = document.querySelector("#status");
-const resetBtn = document.querySelector("#reset");
+const newGameBtn = document.querySelector("#new-game");
+const resetAllBtn = document.querySelector("#reset-all");
 const boardEl = document.querySelector("#board");
 const difficultyEl = document.querySelector("#difficulty");
 const symbolBtns = document.querySelectorAll(".symbol-btn");
+const scoreXEl = document.querySelector("#score-x");
+const scoreOEl = document.querySelector("#score-o");
+const scoreDrawEl = document.querySelector("#score-draw");
+const historyDotsEl = document.querySelector("#history-dots");
+const confettiContainer = document.querySelector("#confetti-container");
+
+const Score = {
+  x: 0,
+  o: 0,
+  draw: 0,
+  history: [],
+  maxHistory: 10,
+
+  addWin(player) {
+    if (player === "X") {
+      this.x++;
+    } else if (player === "O") {
+      this.o++;
+    }
+    this.history.push(player);
+    if (this.history.length > this.maxHistory) this.history.shift();
+    this.updateDisplay();
+    this.animateScore(player);
+    if (player === Game.getHumanSymbol()) {
+      this.spawnConfetti(player);
+    }
+  },
+
+  addDraw() {
+    this.draw++;
+    this.history.push("draw");
+    if (this.history.length > this.maxHistory) this.history.shift();
+    this.updateDisplay();
+    this.animateScore("draw");
+  },
+
+  reset() {
+    this.x = 0;
+    this.o = 0;
+    this.draw = 0;
+    this.history = [];
+    this.updateDisplay();
+  },
+
+  updateDisplay() {
+    scoreXEl.textContent = this.x;
+    scoreOEl.textContent = this.o;
+    scoreDrawEl.textContent = this.draw;
+
+    const scoreItems = document.querySelectorAll(".score-item");
+    scoreItems.forEach((item) => item.classList.remove("leading"));
+
+    if (this.x > this.o) {
+      document
+        .querySelector('.score-item[data-player="X"]')
+        .classList.add("leading");
+    } else if (this.o > this.x) {
+      document
+        .querySelector('.score-item[data-player="O"]')
+        .classList.add("leading");
+    }
+
+    this.updateHistoryDots();
+  },
+
+  updateHistoryDots() {
+    historyDotsEl.innerHTML = "";
+    this.history.forEach((result, index) => {
+      const dot = document.createElement("div");
+      dot.className = "history-dot";
+      dot.dataset.result = result;
+      if (index === this.history.length - 1) {
+        dot.classList.add("new");
+      }
+      historyDotsEl.appendChild(dot);
+    });
+  },
+
+  animateScore(player) {
+    let el;
+    if (player === "X") el = scoreXEl;
+    else if (player === "O") el = scoreOEl;
+    else el = scoreDrawEl;
+
+    el.classList.remove("pop");
+    void el.offsetWidth;
+    el.classList.add("pop");
+  },
+
+  spawnConfetti(player) {
+    const colors =
+      player === "X"
+        ? ["#6b4f3a", "#8b6f5a", "#ab8f7a", "#d8a657"]
+        : ["#7a8f7a", "#9aaf9a", "#a3c4bc", "#d8a657"];
+
+    for (let i = 0; i < 50; i++) {
+      const confetti = document.createElement("div");
+      confetti.className = "confetti";
+
+      // Start from center of screen
+      confetti.style.left = "50%";
+      confetti.style.top = "50%";
+
+      // Random direction burst
+      const angle = Math.random() * Math.PI * 2;
+      const velocity = 50 + Math.random() * 100;
+      const tx = Math.cos(angle) * velocity;
+      const ty = Math.sin(angle) * velocity;
+
+      confetti.style.setProperty("--tx", tx + "vw");
+      confetti.style.setProperty("--ty", ty + "vh");
+      confetti.style.setProperty("--r", Math.random() * 720 - 360 + "deg");
+
+      confetti.style.background =
+        colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.width = Math.random() * 10 + 8 + "px";
+      confetti.style.height = Math.random() * 10 + 8 + "px";
+      confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+      confetti.style.animationDelay = Math.random() * 0.2 + "s";
+
+      confettiContainer.appendChild(confetti);
+      setTimeout(() => confetti.classList.add("active"), 10);
+      setTimeout(() => confetti.remove(), 2000);
+    }
+  },
+};
 
 const Game = (() => {
   let humanSymbol = "X";
@@ -140,8 +267,10 @@ const Game = (() => {
       if (result.win) {
         statusEl.textContent = `Player ${result.player} wins!`;
         highlightWinningCombo(result.combo);
+        Score.addWin(result.player);
       } else if (result.draw) {
         statusEl.textContent = "It's a draw!";
+        Score.addDraw();
       } else {
         statusEl.textContent = `Player ${result.next}'s turn`;
       }
@@ -216,8 +345,10 @@ function playGame(e) {
       if (result.win) {
         statusEl.textContent = `Player ${result.player} wins!`;
         highlightWinningCombo(result.combo);
+        Score.addWin(result.player);
       } else if (result.draw) {
         statusEl.textContent = "It's a draw!";
+        Score.addDraw();
       } else {
         statusEl.textContent = `Player ${result.next}'s turn`;
 
@@ -271,6 +402,15 @@ function resetGame() {
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => cell.classList.remove("win"));
   updateUI();
+
+  if (Game.getHumanSymbol() === "O") {
+    setTimeout(Game.aiMove, 500);
+  }
+}
+
+function resetAll() {
+  Score.reset();
+  resetGame();
 }
 
 function difficultySelect(event) {
@@ -326,7 +466,8 @@ createBoard();
 updateUI();
 
 boardEl.addEventListener("click", playGame);
-resetBtn.addEventListener("click", resetGame);
+newGameBtn.addEventListener("click", resetGame);
+resetAllBtn.addEventListener("click", resetAll);
 difficultyEl.addEventListener("change", difficultySelect);
 symbolBtns.forEach((btn) => btn.addEventListener("click", selectSymbol));
 

@@ -15,7 +15,9 @@
   --option-bis: #e2d2be;
 
   --x: #6b4f3a;
+  --x-rgb: 107, 79, 58;
   --o: #7a8f7a;
+  --o-rgb: 122, 143, 122;
 
   --win: #d8a657;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -41,7 +43,9 @@
   --focus-bis: rgb(113, 106, 139);
 
   --x: #f4b393;
+  --x-rgb: 244, 179, 147;
   --o: #a3c4bc;
+  --o-rgb: 163, 196, 188;
 
   --win: #ffd166;
   --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
